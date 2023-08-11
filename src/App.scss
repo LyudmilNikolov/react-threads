@@ -1,0 +1,56 @@
+@import './assets/variables'; 
+@import './assets/mixins';
+
+%flex-center {
+    display: flex;
+    justify-content: center;
+}
+
+.outer-container {
+    @extend %flex-center;
+}
+
+.container {
+    @extend %flex-center;
+    flex-direction: column;
+}
+
+.thread-wrapper {
+    position: relative;
+    height: 200px;
+    margin: 20px 0;
+
+    &:not(.multiple-threads) {
+        height: auto;
+    }
+
+    .compressed {
+        margin-bottom: 10px;
+    }
+}
+
+
+.thread-box.card {
+    @include box-properties;
+}
+
+.thread-box .row {
+    display: flex;
+    justify-content: space-between;  
+}
+
+.thread-box .total-messages {
+    position: absolute;
+    top: -10px;
+    right: 1rem;
+    color: $total-message-color;
+    padding: 5px 45px;
+    border-radius: $card-radius;
+}
+
+.thread-wrapper.multiple-threads .thread-box.card {
+    cursor: pointer;
+    * {
+        cursor: inherit;
+    }
+}

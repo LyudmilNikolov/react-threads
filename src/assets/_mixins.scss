@@ -1,0 +1,7 @@
+@mixin box-properties {
+    border: 1px solid $primary-border-color;
+    background-color: white;
+    border-radius: $card-radius;
+    box-shadow: 0px 5px 15px $box-shadow-color;
+    padding: 15px;
+}
