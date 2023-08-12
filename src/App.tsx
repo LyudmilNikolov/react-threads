@@ -1,48 +1,54 @@
-import React, { useState, useEffect } from 'react';
-import { getThreads } from './services/ThreadService';
-import ThreadComponent from './components/ThreadComponent';
+import { useState } from 'react';
+import ThreadComponent from './components/Thread';
 import './App.scss';
+import { Thread } from './@types';
+import useThreads from './lib/hooks/useThreads';
 
-const App: React.FC = () => {
-    const [threadGroups, setThreadGroups] = useState<Thread[][]>([]);
-    const [selectedThread, setSelectedThread] = useState<Thread | null>(null);
+const App = () => {
+  const [selectedThreads, setSelectedThreads] = useState<Thread[]>([]);
 
-    useEffect(() => {
-        const fetchThreads = async () => {
-            const data = await getThreads();
-            setThreadGroups(data); 
-        }
-        fetchThreads();
-    }, []);
+  const { data: threadGroups = [], isLoading, error } = useThreads();
 
-    const toggleShowDetails = (thread: Thread) => {
-      if (thread === selectedThread) {
-        setSelectedThread(null);
-      } else {
-        setSelectedThread(thread);
+  const toggleShowDetails = (thread: Thread) => {
+    if (selectedThreads.includes(thread)) {
+      setSelectedThreads([]); 
+    } else {
+      const currentGroup = threadGroups.find(group => group.includes(thread));
+      if (currentGroup) {
+        setSelectedThreads(currentGroup);
       }
-    };
+    }
+  };
 
-    return (
-      <div className='outer-container'>
-        <div className="container">
-            {threadGroups.map((threads, groupIndex) => (
-                <div key={groupIndex} className={`thread-wrapper ${threads.length === 1 ? 'single-thread' : 'multiple-threads'}`}>
-                    {threads.map((thread, index) => (
-                        <ThreadComponent 
-                            key={index}
-                            thread={thread}
-                            index={index}
-                            isSelected={thread === selectedThread}
-                            toggleShowDetails={toggleShowDetails}
-                            threadCount={threads.length}
-                        />
-                    ))}
-                </div>
+  if (isLoading) return <p>Loading...</p>;
+  if (error) return <p>Error loading threads</p>;
+
+  return (
+    <div className='outer-container'>
+      <div className='container'>
+        {threadGroups.map((threads, groupIndex) => (
+          <div
+            key={groupIndex}
+            className={`thread-wrapper ${
+              threads.length === 1 ? 'single-thread' : 'multiple-threads'
+            }`} 
+          >
+            {threads.map((thread, index) => (
+              <ThreadComponent
+                key={index}
+                thread={thread}
+                index={index}
+                showTotalMessages={threads.length > 1}
+                isSelected={selectedThreads.includes(thread)}
+                toggleShowDetails={toggleShowDetails}
+                threadCount={threads.length}
+              />
             ))}
-        </div>
+          </div>
+        ))}
       </div>
-    );
-}  
+    </div>
+  );
+};
 
 export default App;
