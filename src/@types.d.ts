@@ -7,6 +7,10 @@ export interface Thread {
   score: number;
 }
 
+interface ThreadsResponse {
+  threads: Thread[][];
+}
+
 export interface CustomError {
   message: string;
 }

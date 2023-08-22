@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useMemo } from 'react';
 import CustomDate from './CustomDate';
 import { Thread } from '../@types';
 
@@ -19,6 +19,11 @@ const ThreadComponent: FC<Props> = ({
   toggleShowDetails,
   threadCount,
 }) => {
+  
+  const isCompressedCard = (index: number) => {
+    return index > 0 && showTotalMessages;
+  };
+
   const getTransformStyle = (index: number, isSelected: boolean) => {
     if (isSelected) {
       return { transform: 'none' };
@@ -30,12 +35,9 @@ const ThreadComponent: FC<Props> = ({
       return { transform: `translate3d(${translateX}px, -${translateY}px, -${100 * index}px)`, height: '170px' };
     }
     return { transform: 'none' };
-  }
-  
-  
-  const getCardClass = (index: number) => {
-    return index > 0 && showTotalMessages;
   };
+
+  const transformStyle = useMemo(() => getTransformStyle(index, isSelected), [index, isSelected]);
 
   const getZIndex = (index: number) => {
     if (index > 0 && showTotalMessages) {
@@ -47,9 +49,9 @@ const ThreadComponent: FC<Props> = ({
 
   return (
     <div 
-        className={`thread-box card ${getCardClass(index) ? 'compressed' : 'normal-view'} ${isSelected ? 'expanded' : ''}`}
+        className={`thread-box card ${isCompressedCard(index) ? 'compressed' : 'normal-view'} ${isSelected ? 'expanded' : ''}`}
         style={{ 
-            ...getTransformStyle(index, isSelected),
+            ...transformStyle,
             zIndex: getZIndex(index)
         }}
         onClick={() => toggleShowDetails(thread)}
